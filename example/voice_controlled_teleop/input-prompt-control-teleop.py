@@ -39,7 +39,7 @@ class TeleopKeyboard:
         self.client.SetTimeout(10.0)  # 10.0
         self.client.Init()
 
-        self.standing = True  # Assume robot starts in standing position
+        self.standing = False  # Assume robot starts in standing position
         self.command_thread = threading.Thread(target=self.command_loop)
         self.command_thread.start()
     

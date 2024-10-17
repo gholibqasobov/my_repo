@@ -39,6 +39,17 @@ class TeleopRobot:
         self.lin_vel = 0.3
         self.rot_vel = 0.5
 
+        # voice command list
+        self.sit_down_command = ["отыр", "отыру", "отор", "отырныз", "жат", "атар", "отар", "уатар", "адыр", "атыр"]
+        self.stand_up_command = ["тұр", "тор", "тұру", "тар"]
+        self.move_forward_command = ["алға", "алған", "алдыға", "алғы"]
+        self.move_backward_command = ["артқа", "арқа", "артқан", "артқы", "арка"]
+        self.move_left_command = ["солға", "залға", "салуға", "салған", "соға", "сауалға"]
+        self.move_right_command = ["оңға", "онға", "аңға", "ұнға", "анығы"]
+        self.give_hand_command = ["қол", "қол бер", "қолды бер", "лапаны бер", "лампаны бер", "қолды"]
+        self.jump_forward_command = ["секіру", "секір", "секер", "шәкір", "зікір", "зәкір"]
+        self.stop_program_command = ["тоқта", "тақта", "тақты"] 
+
         # Create a sport client
         self.client = SportClient()  
         self.client.SetTimeout(10.0)  # 3.0
@@ -68,23 +79,27 @@ class TeleopRobot:
                     self.process_command(prompt)
 
     def process_command(self, prompt):
-        if prompt == 'тоқта':  # stop the program
+        
+
+        if prompt in self.stop_program_command:  # stop the program
             print("Stopping the teleop")
             quit()
-        elif prompt == 'отыр': # sit down
+        elif prompt in self.sit_down_command: # sit down
             self.SitDown()
-        elif prompt == 'тұр': # stand up
+        elif prompt in self.stand_up_command: # stand up
             self.StandUp()
-        elif prompt == 'оңға':  # turn right
+        elif prompt in self.move_right_command:  # turn right
             self.TurnRight(rot_time=self.rot_time)
-        elif prompt == 'солға':  # turn left
+        elif prompt in self.move_left_command:  # turn left
             self.TurnLeft(rot_time=self.rot_time)
-        elif prompt == 'алға':  # Move forward
+        elif prompt in self.move_forward_command:  # Move forward
             self.MoveForward(lin_time=self.lin_time)
-        elif prompt == 'артқа':  # Move backward
+        elif prompt in self.move_backward_command:  # Move backward
             self.MoveBackward(lin_time=self.lin_time)
-        elif 'қол' in prompt:  # wave front-right leg (say hello)
+        elif prompt in self.give_hand_command:  # wave front-right leg (say hello)
             self.SayHello()
+        elif prompt in self.jump_forward_command:
+            self.JumpForward()
         else:
             print('[WARNING] Wrong Command:', prompt)
             
@@ -199,6 +214,21 @@ class TeleopRobot:
                 self.client.BalanceStand()
                 time.sleep(self.small_dt)
                 print("Robot is saying Hello")
+            else:
+                print("Robot is in sitting position")
+        except AttributeError:
+            pass
+    
+    def JumpForward(self):
+        try:
+            if self.standing:
+                self.client.BalanceStand()
+                time.sleep(self.dt)
+                self.client.FrontJump()
+                time.sleep(2)
+                self.client.BalanceStand()
+                time.sleep(self.dt)
+                print("Robot has jumped")
             else:
                 print("Robot is in sitting position")
         except AttributeError:
